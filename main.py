@@ -120,6 +120,12 @@ if __name__ == '__main__':
 
         audios = []
         lyrics = []
+
+        maskChars = ['＆', '?', '#', ' ']
+        for file in folders[folderIndex]["children"]:
+            for maskChar in maskChars:
+                file["title"] = file["title"].replace(maskChar, "_")
+
         for media in folders[folderIndex]["children"]:
             if media["type"] == "audio":
                 audios.append(media)
@@ -164,7 +170,7 @@ if __name__ == '__main__':
                     "data/" + workCode + "/covers/mainCover.jpg", "rb").read(), "image/jpeg")
             else:
                 print("Main cover not found. Skip.")
-                
+
             if "lyricUrl" in audio:
                 audioFile.tag.lyrics.set(open(
                     "data/" + workCode + "/" + audioTitle + ".lrc", "r", encoding="utf-8").read())
@@ -172,12 +178,13 @@ if __name__ == '__main__':
             for i in range(len(vas) - 1):
                 vasStr += vas[i]["name"] + "\\\\"
             vasStr += vas[-1]["name"]
-            
+
             audioFile.tag.release_date = workInfo["release"]
             audioFile.tag.album = workInfo["title"]
             audioFile.tag.artist = vasStr
             audioFile.tag.album_artist = workInfo["name"]
             audioFile.tag.track_num = index + 1
+            audioFile.tag.header.version = (2, 3, 0)
 
             audioFile.tag.save()
 
